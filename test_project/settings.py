@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-2paubq%a!h3u!zm---s#rcgb=yhxik=cu0d*x8)f8sb%im=(m+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["127.0.0.1", "localhost", "apitest2024.pythonanywhere.com"]
+ALLOWED_HOSTS = ["127.0.0.1", "localhost", "shankrishna.pythonanywhere.com", "instinct-django.eu-north-1.elasticbeanstalk.com"]
 
 
 # Application definition
