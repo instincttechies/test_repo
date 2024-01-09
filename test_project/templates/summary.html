@@ -1,0 +1,106 @@
+<!-- dashboard.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Home Page</title>
+    <style>
+        body {
+          font-family: Arial, sans-serif;
+          text-align: center;
+          background-color: #f4f4f4;
+          margin: 0;
+          padding: 0;
+        }
+        .container {
+          padding-top: 100px;
+          display:flex;
+          flex-direction: column;
+          justify-content: space-between;
+          align-items: center;
+        }
+        h1 {
+          color: #333;
+          font-size: 36px;
+          margin-bottom: 30px;
+        }
+        .btn {
+          display: inline-block;
+          padding: 10px 20px;
+          margin: 0 10px;
+          font-size: 16px;
+          text-decoration: none;
+          color: #fff;
+          border-radius: 5px;
+        }
+        .summary {
+          background-color: #e67e22;
+        }
+        .summary:hover{
+            background-color: #d35400;
+        }
+        .logout{
+            background-color: #e74c3c;
+        }
+        .logout:hover{
+            background-color: #2ecc71;
+        }
+        .newitem{
+            background-color: #3498db;
+        }
+        .newitem:hover{
+            background-color: #2ecc71;
+        }
+        .button-group{
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .table-container{
+            margin: auto;
+            width: %;60;
+            margin-left: 50px;
+        }
+      </style>
+      <script>
+            function getCSRFToken() {
+                var csrfToken = null;
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = cookies[i].trim();
+                    if (cookie.startsWith('csrftoken=')) {
+                        csrfToken = cookie.substring('csrftoken='.length, cookie.length);
+                        break;
+                    }
+                }
+                return csrfToken;
+            }
+            function fechTotalPrice(){
+                var csrfToken = getCSRFToken(); // Get CSRF token from cookies
+                fetch('/api/summary/')
+                .then(response=> response.json())
+                .then(data => {
+                    document.getElementById('totalPrice').innerText=`Total Price: $${data.total_price}`;
+                    })
+                .catch(error=>{
+                  console.error("Error:", error)
+                });
+            }
+            // Call the function to populate the table when the page loads
+            window.onload = fechTotalPrice;
+       </script>
+</head>
+<body>
+    <div class="container">
+        <h2>Summary</h2>
+            {% csrf_token %}
+            <p id="totalPrice">Total Price: Loading...</p>
+            <br>
+            <br>
+            <div class="button-group">
+                <a class="btn summary" href="/dashboard/">Back</a>
+            </div>
+    </div>
+</body>
+</html>

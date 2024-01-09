@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Logout</title>
+</head>
+<body>
+  <h2>Logout</h2>
+  <button onclick="logout()">Logout</button>
+  <script>
+    function logout() {
+      fetch('api/logout/', {
+        method: 'POST',
+        headers:{
+          'Content-Type': 'application/json',
+        },
+      })
+      .then(response => {
+        if (response.ok){
+          window.location.href = '/login/;
+        } else {
+          alert("Error Logging Out");
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      })
+    }
+  </script>
+</body>
+</html>

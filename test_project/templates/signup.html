@@ -1,0 +1,174 @@
+<!-- signup.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+          font-family: Arial, sans-serif;
+          text-align: center;
+          background-color: #f4f4f4;
+          margin: 0;
+          padding: 0;
+        }
+        form {
+            width: 800px;
+            margin-top: 20px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .container {
+          padding-top: 100px;
+          display:flex;
+          flex-direction: column;
+          justify-content: space-between;
+          align-items: center;
+        }
+        input[type="text"],
+        input[type="password"],
+        input[type="email"],
+        input[type="submit"]{
+            width: calc(100% - 20ox);
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        input[type="submit"] {
+            background-color: #3498db;
+            color: #fff;
+            cursor: pointer;
+        }
+        .form-field {
+            margin-bottom: 15px;
+            display: flex;
+            margin-left: 270px;
+        }
+        .form-label {
+            display: block;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .form-info {
+            display: block;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        h1 {
+          color: #333;
+          font-size: 36px;
+          margin-bottom: 30px;
+        }
+        .btn {
+          display: inline-block;
+          padding: 10px 20px;
+          margin: 0 10px;
+          font-size: 16px;
+          text-decoration: none;
+          color: #fff;
+          border-radius: 5px;
+        }
+        .login {
+          background-color: #3498db;
+        }
+        .button-group{
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .table-container{
+            margin: auto;
+            width: %;60
+        }
+      </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Sign Up</h1>
+        <form>
+            <div class="form-field">
+                <input type="text" id="newUsername" class="form-label" placeholder="Enter New Username" required>
+            </div>
+            <div class="form-field">
+                <input type="email" id="email" class="form-label" placeholder="Enter Mail address" required>
+            </div>
+            <div class="form-field">
+                <input type="password" id="newPassword" class="form-label" placeholder="Enter Password" required>
+            </div>
+            <div class="form-field">
+                <input type="password" id="confirmPassword" class="form-label" placeholder="Confirm Password" required>
+            </div>
+            <button class="btn btn-lg btn-primary btn-block" type="button" onclick="signup()">Register</button>
+        </form>
+    </div>
+    <script>
+        function getCSRFToken() {
+                var csrfToken = null;
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = cookies[i].trim();
+                    if (cookie.startsWith('csrftoken=')) {
+                        csrfToken = cookie.substring('csrftoken='.length, cookie.length);
+                        break;
+                    }
+                }
+                return csrfToken;
+        }
+        function signup() {
+            var newUsername = document.getElementById('newUsername').value;
+            var email = document.getElementById('email').value;
+            var newPassword = document.getElementById('newPassword').value;
+            var confirmPassword = document.getElementById('confirmPassword').value;
+
+            // Check if passwords match
+            if (newPassword !== confirmPassword) {
+                alert('Passwords do not match');
+                return;
+            }
+
+            // Regular expression for email validation
+            var emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+            if (!emailPattern.test(email)) {
+                alert('Invalid email');
+                return;
+            }
+            var csrfToken = getCSRFToken(); // Get CSRF token from cookies
+            fetch('/api/auth/signup/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken // Include the CSRF token in the header
+                },
+                body: JSON.stringify({
+                    username: newUsername,
+                    email: email,
+                    password: newPassword
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Redirect or handle successful signup
+                    alert("User Created Successfully! Please login!")
+                    window.location.href = '/login/';
+                } else {
+                    // Handle signup failure
+                    console.log(response.text);
+                    alert('Error signing up');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</body>
+</html>

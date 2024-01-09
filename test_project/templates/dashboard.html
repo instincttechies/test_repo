@@ -1,0 +1,174 @@
+<!-- dashboard.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Home Page</title>
+    <style>
+        body {
+          font-family: Arial, sans-serif;
+          text-align: center;
+          background-color: #f4f4f4;
+          margin: 0;
+          padding: 0;
+        }
+        .container {
+          padding-top: 100px;
+          display:flex;
+          flex-direction: column;
+          justify-content: space-between;
+          align-items: center;
+        }
+        h1 {
+          color: #333;
+          font-size: 36px;
+          margin-bottom: 30px;
+        }
+        .btn {
+          display: inline-block;
+          padding: 10px 20px;
+          margin: 0 10px;
+          font-size: 16px;
+          text-decoration: none;
+          color: #fff;
+          border-radius: 5px;
+        }
+        .summary {
+          background-color: #e67e22;
+        }
+        .summary:hover{
+            background-color: #d35400;
+        }
+        .logout{
+            background-color: #e74c3c;
+        }
+        .logout:hover{
+            background-color: #2ecc71;
+        }
+        .newitem{
+            background-color: #3498db;
+        }
+        .newitem:hover{
+            background-color: #2ecc71;
+        }
+        .button-group{
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .table-container{
+            margin: auto;
+            width: %;60;
+            margin-left: 50px;
+        }
+      </style>
+      <script>
+            function getCSRFToken() {
+                var csrfToken = null;
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = cookies[i].trim();
+                    if (cookie.startsWith('csrftoken=')) {
+                        csrfToken = cookie.substring('csrftoken='.length, cookie.length);
+                        break;
+                    }
+                }
+                return csrfToken;
+            }
+            function populateTable(){
+                var csrfToken = getCSRFToken(); // Get CSRF token from cookies
+                fetch('/api/dashboard/')
+                .then(response=> response.json())
+                .then(data => {
+                    const tableBody=document.querySelector('#itemTable tbody');
+                    tableBody.innerHTML=''; //Clear table body
+
+                    data.forEach(item => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${item.id}</td>
+                            <td>${item.name}</td>
+                            <td>${item.price}</td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                })
+                .catch(error=>{
+                  console.error("Error:", error)
+                });
+            }
+            // Call the function to populate the table when the page loads
+           window.onload = populateTable;
+
+           function getCSRFToken() {
+                var csrfToken = null;
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = cookies[i].trim();
+                    if (cookie.startsWith('csrftoken=')) {
+                        csrfToken = cookie.substring('csrftoken='.length, cookie.length);
+                        break;
+                    }
+                }
+                return csrfToken;
+            }
+
+           function onSummaryButtonClick(event) {
+                event.preventDefault(); // Prevent default form submission behavior
+                window.location.href = '/summary/'; // Redirect to summary page
+            }
+            function onSummaryLogoutButtonClick(event) {
+                var csrfToken = getCSRFToken(); // Get CSRF token from cookies
+                event.preventDefault(); // Prevent default form submission behavior
+                fetch('/api/auth/logout/',{
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken // Include the CSRF token in the header
+                    },
+                })
+                .then(response => {
+                    if(response.ok) {
+                        window.location.href = '/'; // Redirect to Home Page
+                    } else {
+                        console.error("Logout Failed!");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error",error);
+                });
+            }
+
+        </script>
+</head>
+<body>
+    <div class="container">
+        <h2>Items with Prices</h2>
+        <form method="post">
+            <div class="table-container">
+                <table border="1" id="itemTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Item Name</th>
+                            <th>Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Table body will be populated dynamically -->
+                    </tbody>
+                </table>
+                {% csrf_token %}
+            </div>
+            <br>
+            <br>
+
+            <div class="button-group">
+                <button class="btn summary" onclick="onSummaryButtonClick(event)">Summary</button>
+                <button class="btn logout" onclick="onSummaryLogoutButtonClick(event)">Logout</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

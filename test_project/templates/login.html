@@ -1,0 +1,110 @@
+<!-- login.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .container {
+          padding-top: 10px;
+          display:flex;
+          flex-direction: column;
+          justify-content: space-between;
+          align-items: center;
+        }
+        body {
+            padding-top: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .form-login {
+            width: 100%;
+            max-width: 400px;
+            padding: 15px;
+            margin: auto;
+        }
+        .form-login .form-control {
+            position: relative;
+            box-sizing: border-box;
+            height: auto;
+            padding: 10px;
+            font-size: 16px;
+        }
+        .form-login .form-control:focus {
+            z-index: 2;
+        }
+        .form-login input[type="text"],
+        .form-login input[type="password"] {
+            margin-bottom: 10px;
+        }
+        .form-login button {
+            width: 100%;
+        }
+        .form-group {
+            margin-left: 100px;
+        }
+    </style>
+    <script>
+            function getCSRFToken() {
+                var csrfToken = null;
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = cookies[i].trim();
+                    if (cookie.startsWith('csrftoken=')) {
+                        csrfToken = cookie.substring('csrftoken='.length, cookie.length);
+                        break;
+                    }
+                }
+                return csrfToken;
+            }
+
+              function login(){
+                var username= document.getElementById('username').value;
+                var password=document.getElementById('password').value;
+                var data = JSON.stringify({
+                    'username': username,
+                    'password': password
+                });
+                var csrfToken = getCSRFToken(); // Get CSRF token from cookies
+                fetch('/api/auth/login/', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken // Include the CSRF token in the header
+                  },
+                  body: data
+                })
+                .then(response=> {
+                  if (response.ok){
+                    window.location.href='/dashboard/';
+                  } else{
+                    alert('Invalid Credentials')
+                  }
+                })
+                .catch(error=>{
+                  console.error("Error:", error)
+                });
+              }
+        </script>
+</head>
+<body>
+    <div class="container">
+        <h2>Login Page</h2>
+        <form class="form-login">
+            {% csrf_token %}
+            <div class="form-group">
+                <input type="text" id="username" placeholder="Username" required><br>
+            </div>
+            <div class="form-group">
+                <input type="password" id="password" placeholder="Password" required>
+            </div>
+            <button class="btn btn-lg btn-primary btn-block" type="button" onclick="login()">Login</button>
+        </form>
+    </div>
+
+</body>
+</html>
